@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>영단어 객관식 퀴즈</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      text-align: center;
+      padding: 40px;
+      background-color: #f4f4f4;
+    }
+    .card {
+      background: white;
+      padding: 30px;
+      border-radius: 12px;
+      max-width: 500px;
+      margin: auto;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+    }
+    .word {
+      font-size: 24px;
+      margin-bottom: 20px;
+    }
+    .btn {
+      display: block;
+      width: 100%;
+      margin: 10px 0;
+      padding: 10px;
+      font-size: 18px;
+      border: none;
+      border-radius: 8px;
+      background-color: #3498db;
+      color: white;
+      cursor: pointer;
+    }
+    .btn:hover {
+      background-color: #2980b9;
+    }
+    #score {
+      margin-top: 20px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+
+<div class="card">
+  <div class="word" id="question">문제 로딩 중...</div>
+  <div id="options"></div>
+  <div id="score"></div>
+</div>
+
+<script>
+  const words = [
+    { english: "apple", korean: "사과" },
+    { english: "banana", korean: "바나나" },
+    { english: "cat", korean: "고양이" },
+    { english: "dog", korean: "개" },
+    { english: "elephant", korean: "코끼리" },
+    { english: "tiger", korean: "호랑이" },
+    { english: "lion", korean: "사자" }
+  ];
+
+  let score = 0;
+  let questions = [...words];
+  let currentQuestion;
+
+  function shuffle(array) {
+    return array.sort(() => Math.random() - 0.5);
+  }
+
+  function nextQuestion() {
+    if (questions.length === 0) {
+      document.getElementById("question").innerText = "🎉 모든 문제를 다 풀었습니다!";
+      document.getElementById("options").innerHTML = "";
+      return;
+    }
+
+    currentQuestion = questions.pop();
+    const choices = shuffle([
+      currentQuestion.korean,
+      ...shuffle(words.filter(w => w.korean !== currentQuestion.korean)).slice(0, 3).map(w => w.korean)
+    ]);
+
+    document.getElementById("question").innerText = `🔤 ${currentQuestion.english}`;
+    const optionsDiv = document.getElementById("options");
+    optionsDiv.innerHTML = "";
+    choices.forEach(choice => {
+      const btn = document.createElement("button");
+      btn.innerText = choice;
+      btn.className = "btn";
+      btn.onclick = () => {
+        if (choice === currentQuestion.korean) {
+          score++;
+          alert("✅ 정답!");
+        } else {
+          alert(`❌ 오답! 정답: ${currentQuestion.korean}`);
+        }
+        document.getElementById("score").innerText = `현재 점수: ${score}`;
+        nextQuestion();
+      };
+      optionsDiv.appendChild(btn);
+    });
+  }
+
+  shuffle(questions);
+  nextQuestion();
+</script>
+
+</body>
+</html>
